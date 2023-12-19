@@ -23,7 +23,7 @@ export default function Dashboard() {
   useSocketConnection(userDetails);
 
   useEffect(() => {
-    const userDetails = localStorage.getItem("user");
+    const userDetails = JSON.parse(localStorage.getItem("user"));
     if (!userDetails) {
       logout();
     } else {
