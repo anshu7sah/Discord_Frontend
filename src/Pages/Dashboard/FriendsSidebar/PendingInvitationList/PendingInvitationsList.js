@@ -14,7 +14,6 @@ const MainContainer = styled("div")({
 
 const PendingInvitationsList = () => {
   const { pendingFriendsInvitations } = useSelector((e) => e.friends);
-  console.log(pendingFriendsInvitations);
 
   return (
     <MainContainer>

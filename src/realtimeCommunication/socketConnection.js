@@ -31,13 +31,15 @@ import {
   setOnlineUser,
   setPendingFriendsInvitations,
 } from "../store/friendsSlice";
+import { updateDirectChatHistoryIfActive } from "../Shared/utils/updateDirectChatHistoryIfActive";
 
+let socket = null;
 const useSocketConnection = (userDetails) => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    const jwtToken = userDetails.token;
-    const socket = io("http://localhost:5002", {
+    const jwtToken = userDetails?.token;
+    socket = io("http://localhost:5002", {
       auth: {
         token: jwtToken,
       },
@@ -62,12 +64,22 @@ const useSocketConnection = (userDetails) => {
       dispatch(setOnlineUser(onlineUsers));
     });
 
+    socket.on("direct-chat-history", (data) => {
+      updateDirectChatHistoryIfActive(data);
+    });
+
     return () => {
       socket.disconnect();
     };
-  }, [dispatch, userDetails.token]);
+  }, [dispatch, userDetails?.token]);
 
   return null;
+};
+export const sendDirectMessage = (data) => {
+  socket?.emit("direct-message", data);
+};
+export const getDirectChatHistory = (data) => {
+  socket?.emit("direct-chat-history", data);
 };
 
 export default useSocketConnection;
