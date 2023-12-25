@@ -5,10 +5,11 @@ import FriendsSidebar from "./FriendsSidebar/FriendsSidebar";
 import Messenger from "./Messenger/Messenger";
 import AppBar from "./AppBar/AppBar";
 import { logout } from "../../Shared/utils/auth";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setUserDetails } from "../../store/authSlice";
 // import { connectWithSocketServer } from "../../realtimeCommunication/socketConnection";
 import useSocketConnection from "../../realtimeCommunication/socketConnection";
+import Room from "./Room/Room";
 
 const Wrapper = styled("div")({
   width: "100%",
@@ -17,6 +18,8 @@ const Wrapper = styled("div")({
 });
 
 export default function Dashboard() {
+  const { isUserInRoom } = useSelector((e) => e.room);
+
   const dispatch = useDispatch();
   const userDetails = JSON.parse(localStorage.getItem("user"));
 
@@ -37,6 +40,7 @@ export default function Dashboard() {
       <FriendsSidebar />
       <Messenger />
       <AppBar />
+      {isUserInRoom && <Room />}
     </Wrapper>
   );
 }
