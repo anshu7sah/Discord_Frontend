@@ -41,7 +41,7 @@ const useSocketConnection = (userDetails) => {
 
   useEffect(() => {
     const jwtToken = userDetails?.token;
-    socket = io("http://localhost:5002", {
+    socket = io("https://discord-backend-w4r5.onrender.com", {
       auth: {
         token: jwtToken,
       },
