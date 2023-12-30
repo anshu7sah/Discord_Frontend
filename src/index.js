@@ -6,6 +6,11 @@ import App from "./App";
 import "./index.css";
 import { BrowserRouter } from "react-router-dom";
 
+import * as process from "process";
+window.global = window;
+window.process = process;
+window.Buffer = [];
+
 const container = document.getElementById("root");
 const root = createRoot(container);
 
