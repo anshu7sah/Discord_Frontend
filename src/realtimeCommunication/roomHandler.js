@@ -70,7 +70,7 @@ export const joinRoom = (roomId) => {
 };
 
 export const leaveRoom = () => {
-  const roomId = store.getState().room.roomDetails.roomId;
+  const roomId = store.getState().room?.roomDetails?.roomId;
   const localStream = store.getState().room.localStreams;
   if (localStream) {
     localStream.getTracks().forEach((track) => track.stop());
