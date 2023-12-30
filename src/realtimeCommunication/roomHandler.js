@@ -4,6 +4,8 @@ import {
   setLocalStream,
   setRemoteStream,
   setRoomDetails,
+  setScreenSharingStream,
+  setUserJoinedWithAudioOnly,
 } from "../store/roomSlice";
 import { store } from "../store/store";
 import * as socketConnection from "./socketConnection";
@@ -16,6 +18,8 @@ export const createNewRoom = () => {
         isUserRoomCreater: true,
       })
     );
+    const audioOnly = store.getState().room.audioOnly;
+    store.dispatch(setUserJoinedWithAudioOnly(audioOnly));
     socketConnection.createNewRoom();
   };
   const onlyAudio = store.getState().room.audioOnly;
@@ -30,9 +34,13 @@ export const updateActiveRooms = (data) => {
   const { activeRooms } = data;
 
   const friends = store.getState().friends.friends;
+  const personalUser = store.getState().auth.userDetails;
   const rooms = [];
 
   activeRooms.forEach((room) => {
+    if (personalUser?._id === room?.roomCreater.userId) {
+      rooms.push({ ...room, createrUsername: "Me" });
+    }
     friends?.forEach((f) => {
       if (f.id === room?.roomCreater.userId) {
         rooms.push({ ...room, createrUsername: f.username });
@@ -52,6 +60,8 @@ export const joinRoom = (roomId) => {
         isUserRoomCreater: false,
       })
     );
+    const audioOnly = store.getState().room.audioOnly;
+    store.dispatch(setUserJoinedWithAudioOnly(audioOnly));
     socketConnection.joinRoom({ roomId });
   };
   const onlyAudio = store.getState().room.audioOnly;
@@ -61,16 +71,18 @@ export const joinRoom = (roomId) => {
 
 export const leaveRoom = () => {
   const roomId = store.getState().room.roomDetails.roomId;
-
   const localStream = store.getState().room.localStreams;
   if (localStream) {
     localStream.getTracks().forEach((track) => track.stop());
     store.dispatch(setLocalStream(null));
   }
-
+  const screenShareStream = store.getState().room.screenSharingStream;
+  if (screenShareStream) {
+    screenShareStream.getTracks().forEach((track) => track.stop());
+    store.dispatch(setScreenSharingStream(null));
+  }
   store.dispatch(setRemoteStream([]));
   webRTCHandler.closeAllConnection();
-
   socketConnection.leaveRoom({ roomId });
   store.dispatch(setRoomDetails(null));
   store.dispatch(

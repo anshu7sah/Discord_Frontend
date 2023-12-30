@@ -54,6 +54,7 @@ export const prepareNewPeerConnection = (connUserSocketId, isInitiator) => {
   }
   peers[connUserSocketId] = new Peer({
     initiator: isInitiator,
+    // trickle: false,
     config: getConfiguration(),
     stream: localStream,
   });
@@ -66,7 +67,7 @@ export const prepareNewPeerConnection = (connUserSocketId, isInitiator) => {
 
     //ToDO
     //pass signaling data to other user
-    //socketConnection.signalPeerData(signalData);
+    // socketConnection.signalPeerData(signalData);
   });
 
   peers[connUserSocketId].on("stream", (remoteStream) => {
@@ -95,9 +96,13 @@ const addNewRemoteStream = (remoteStream) => {
 
 export const closeAllConnection = () => {
   Object.entries(peers).forEach((mappedObect) => {
+    console.log(mappedObect);
     const connUserSocketId = mappedObect[0];
+    console.log(peers[connUserSocketId]);
+
     if (peers[connUserSocketId]) {
       peers[connUserSocketId].destroy();
+
       delete peers[connUserSocketId];
     }
   });
@@ -107,11 +112,33 @@ export const handleParticipantLeftRoom = (data) => {
   const { connUserSocketId } = data;
   if (peers[connUserSocketId]) {
     peers[connUserSocketId].destroy();
+
     delete peers[connUserSocketId];
   }
+
   const remoteStreams = store.getState().room.remoteStreams;
   const newRemoteStreams = remoteStreams.filter(
     (remoteStream) => remoteStream.connUserSocketId !== connUserSocketId
   );
   store.dispatch(setRemoteStream(newRemoteStreams));
+};
+
+export const switchOutgoingTracks = (stream) => {
+  for (let socket_id in peers) {
+    for (let index in peers[socket_id].streams[0].getTracks()) {
+      for (let index2 in stream.getTracks()) {
+        if (
+          peers[socket_id].streams[0].getTracks()[index].kind ===
+          stream.getTracks()[index2].kind
+        ) {
+          peers[socket_id].replaceTrack(
+            peers[socket_id].streams[0].getTracks()[index],
+            stream.getTracks()[index2],
+            peers[socket_id].streams[0]
+          );
+          break;
+        }
+      }
+    }
+  }
 };

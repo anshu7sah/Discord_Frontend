@@ -54,7 +54,7 @@ const useSocketConnection = (userDetails) => {
 
     socket.on("friends-invitations", (data) => {
       const { pendingInvitations } = data;
-      console.log("live pending invitations", pendingInvitations);
+
       dispatch(setPendingFriendsInvitations(pendingInvitations));
     });
     socket.on("friends-list", (data) => {

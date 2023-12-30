@@ -2,12 +2,13 @@ import React from "react";
 import Button from "@mui/material/Button";
 import AddIcon from "@mui/icons-material/Add";
 import { createNewRoom } from "../../../realtimeCommunication/roomHandler";
-const CreateRoomButton = () => {
+const CreateRoomButton = ({ isUserInRoom }) => {
   const createNewRoomHandler = () => {
     createNewRoom();
   };
   return (
     <Button
+      disabled={isUserInRoom}
       onClick={createNewRoomHandler}
       style={{
         width: "48px",

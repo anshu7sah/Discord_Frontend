@@ -11,12 +11,17 @@ const MainContainer = styled("div")({
 });
 
 const VideoContainer = () => {
-  const { localStreams, remoteStreams } = useSelector((e) => e.room);
+  const { localStreams, remoteStreams, screenSharingStream } = useSelector(
+    (e) => e.room
+  );
 
   return (
     <MainContainer>
-      <Video stream={localStreams} isLocalStream />
-      {remoteStreams.map((stream) => (
+      <Video
+        stream={screenSharingStream ? screenSharingStream : localStreams}
+        isLocalStream
+      />
+      {remoteStreams?.map((stream) => (
         <Video stream={stream} key={stream.id} />
       ))}
     </MainContainer>

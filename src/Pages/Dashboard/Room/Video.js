@@ -17,7 +17,9 @@ const Video = ({ stream, isLocalStream }) => {
   const videoRef = useRef();
   useEffect(() => {
     const video = videoRef.current;
-    video.srcObject = stream;
+    if (stream) {
+      video.srcObject = stream;
+    }
     video.onloadedmetadata = () => {
       video.play();
     };
